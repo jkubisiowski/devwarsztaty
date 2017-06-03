@@ -6,6 +6,7 @@ using DevWarsztaty.Messages.Commands;
 using DevWarsztaty.Messages.Events;
 using DevWarsztaty.WebApi.Framework;
 using DevWarsztaty.WebApi.Handlers;
+using DevWarsztaty.WebApi.Storage;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -36,6 +37,7 @@ namespace DevWarsztaty.WebApi
             // Add framework services.
             services.AddMvc();
             ConfigureRabbitMq(services);
+            ConfigureDatabase(services);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -72,6 +74,11 @@ namespace DevWarsztaty.WebApi
             client.SubscribeAsync<CreateRecordFailed>((msg, ctx) =>
                 app.ApplicationServices.GetService
                     <IEventHandler<CreateRecordFailed>>().HandleAsync(msg));
+        }
+
+        private void ConfigureDatabase(IServiceCollection services)
+        {
+            services.AddSingleton<IStorage>(new InMemoryDb());
         }
     }
 }

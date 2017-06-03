@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DevWarsztaty.Messages.Commands;
+using DevWarsztaty.WebApi.Storage;
 using Microsoft.AspNetCore.Mvc;
 using RawRabbit;
 
@@ -12,10 +13,18 @@ namespace DevWarsztaty.WebApi.Controllers
     public class RecordsController : Controller
     {
         private readonly IBusClient _busClient;
+        private readonly IStorage _storage;
 
-        public RecordsController(IBusClient busClient)
+        public RecordsController(IBusClient busClient, IStorage storage)
         {
             _busClient = busClient;
+            _storage = storage;
+        }
+
+        [HttpGet]
+        public  IActionResult Get()
+        {
+            return Ok(_storage.GetAll());
         }
 
         [HttpPost]
