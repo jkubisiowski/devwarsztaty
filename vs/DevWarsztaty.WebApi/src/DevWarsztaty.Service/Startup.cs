@@ -2,12 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DevWarsztaty.Messages.Commands;
 using DevWarsztaty.Service.Framework;
+using DevWarsztaty.Service.Handlers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using RawRabbit;
 using RawRabbit.vNext;
 
 namespace DevWarsztaty.Service
@@ -40,6 +43,7 @@ namespace DevWarsztaty.Service
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
+            ConfigureHandlers(app);
             app.UseMvc();
         }
 
@@ -51,7 +55,17 @@ namespace DevWarsztaty.Service
             services.Configure<RabbitMqOptions>(section);
 
             var client = BusClientFactory.CreateDefault(options);
-            services.AddSingleton(client);
+            services.AddSingleton<IBusClient>(client);
+            services.AddScoped<ICommandHandler<CreateRecord>, CreateRecordHandler>();
+        }
+
+        private void ConfigureHandlers(IApplicationBuilder app)
+        {
+            var client = app.ApplicationServices.GetService<IBusClient>();
+            client.SubscribeAsync<CreateRecord>((msg, ctx) =>
+                app.ApplicationServices.GetService
+                    <ICommandHandler<CreateRecord>>().HandleAsync(msg));
+
         }
     }
 }

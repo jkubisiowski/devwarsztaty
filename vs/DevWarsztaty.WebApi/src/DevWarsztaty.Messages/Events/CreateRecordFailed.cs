@@ -1,6 +1,8 @@
-﻿namespace DevWarsztaty.Messages.Events
+﻿using DevWarsztaty.Messages.Commands;
+
+namespace DevWarsztaty.Messages.Events
 {
-    public class CreateRecordFailed
+    public class CreateRecordFailed : IEvent
     {
         protected CreateRecordFailed()
         {

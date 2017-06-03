@@ -2,12 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DevWarsztaty.Messages.Commands;
+using DevWarsztaty.Messages.Events;
 using DevWarsztaty.WebApi.Framework;
+using DevWarsztaty.WebApi.Handlers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using RawRabbit;
 using RawRabbit.vNext;
 
 namespace DevWarsztaty.WebApi
@@ -39,7 +43,7 @@ namespace DevWarsztaty.WebApi
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
-
+            ConfigureHandlers(app);
             app.UseMvc();
         }
 
@@ -51,7 +55,23 @@ namespace DevWarsztaty.WebApi
             services.Configure<RabbitMqOptions>(section);
 
             var client = BusClientFactory.CreateDefault(options);
-            services.AddSingleton(client);
+            services.AddSingleton<IBusClient>(client);
+            services.AddScoped<IEventHandler<RecordCreated>, RecordCreatedHandler>();
+            services.AddScoped<IEventHandler<CreateRecordFailed>, CreateRecordFailedHandler>();
+
+        }
+
+        private void ConfigureHandlers(IApplicationBuilder app)
+        {
+            var client = app.ApplicationServices.GetService<IBusClient>();
+
+            client.SubscribeAsync<RecordCreated>((msg, ctx) =>
+                app.ApplicationServices.GetService
+                    <IEventHandler<RecordCreated>>().HandleAsync(msg));
+
+            client.SubscribeAsync<CreateRecordFailed>((msg, ctx) =>
+                app.ApplicationServices.GetService
+                    <IEventHandler<CreateRecordFailed>>().HandleAsync(msg));
         }
     }
 }

@@ -2,7 +2,7 @@
 
 namespace DevWarsztaty.Messages.Commands
 {
-    public interface ICommadHandler<T> where T : ICommand
+    public interface ICommandHandler<T> where T : ICommand
     {
         Task HandleAsync(T command);
     }

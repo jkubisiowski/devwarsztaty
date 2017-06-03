@@ -8,8 +8,7 @@ using RawRabbit;
 
 namespace DevWarsztaty.Service.Handlers
 {
-    public class CreateRecordHandler : 
-        DevWarsztaty.Messages.Commands.ICommadHandler<CreateRecord>
+    public class CreateRecordHandler : ICommandHandler<CreateRecord>
     {
         private readonly IBusClient _busClient;
 
