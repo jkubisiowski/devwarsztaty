@@ -3,12 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace DevWarsztaty.Messages
+namespace DevWarsztaty.Messages.Commands
 {
-    public class Class1
+    // Market interface
+    public interface ICommand
     {
-        public Class1()
-        {
-        }
     }
 }
