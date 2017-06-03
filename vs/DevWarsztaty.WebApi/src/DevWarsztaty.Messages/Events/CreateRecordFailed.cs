@@ -1,12 +1,12 @@
 ﻿namespace DevWarsztaty.Messages.Events
 {
-    class CreatedRecordFailed
+    public class CreateRecordFailed
     {
-        protected CreatedRecordFailed()
+        protected CreateRecordFailed()
         {
         }
 
-        public CreatedRecordFailed(string key, string reason)
+        public CreateRecordFailed(string key, string reason)
         {
             Key = key;
             Reason = reason;
